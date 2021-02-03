@@ -10,6 +10,39 @@ import Cocoa
 
 
 class AppleScriptRunner: ObservableObject, Hashable {
+    class Error: Equatable {
+        //  Conform to Equatable
+        static func == (lhs: AppleScriptRunner.Error, rhs: AppleScriptRunner.Error) -> Bool {
+            return lhs.errorDict == rhs.errorDict
+        }
+        
+        private let errorDict: NSDictionary
+        
+        var number: OSStatus {
+            return (errorDict[NSAppleScript.errorNumber] as? NSNumber)?.int32Value ?? noErr
+        }
+        var message: String {
+            return errorDict[NSAppleScript.errorMessage] as? String ?? briefMessage
+        }
+        var briefMessage: String {
+            return errorDict[NSAppleScript.errorBriefMessage] as? String ?? "unknown error"
+        }
+        var range: NSRange? {
+            return (errorDict[NSAppleScript.errorBriefMessage] as? NSValue)?.rangeValue
+        }
+        var application: String? {
+            return errorDict[NSAppleScript.errorAppName] as? String
+        }
+
+        init(_ errorDict: NSDictionary) {
+            self.errorDict = errorDict
+        }
+    }
+    
+    enum State: Equatable {
+        case idle, running, complete(NSAppleEventDescriptor), error(Error)
+    }
+    
     //  Conform to Equitable
     static func == (lhs: AppleScriptRunner, rhs: AppleScriptRunner) -> Bool {
         return lhs.id == rhs.id
@@ -21,12 +54,8 @@ class AppleScriptRunner: ObservableObject, Hashable {
     }
 
     let id = UUID()
-    let script: NSAppleScript
+    private let script: NSAppleScript
 
-    enum State: Equatable {
-        case idle, running, complete(NSAppleEventDescriptor), error(String)
-    }
-    
     @Published private (set) var state = State.idle
 
     init(_ source: String) {
@@ -45,7 +74,7 @@ class AppleScriptRunner: ObservableObject, Hashable {
     private func completed(_ resultDesc: NSAppleEventDescriptor, error: NSDictionary?) {
         if let error = error  {
             print("error: \(error)")
-            self.state = .error(error[NSAppleScript.errorMessage] as? String ?? "unknown error")
+            self.state = .error(Error(error))
         }
         else {
             print("result: \(resultDesc)")

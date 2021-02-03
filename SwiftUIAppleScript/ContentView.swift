@@ -84,8 +84,8 @@ struct AppleScriptRunnerView: View {
                     .foregroundColor(.white)
                     .padding(.all, 10)
                 
-            case .error(let message):
-                Text(message)
+            case .error(let error):
+                Text("\(error.number) - \(error.message)")
                     .foregroundColor(.red)
                     .padding(.all, 10)
 
