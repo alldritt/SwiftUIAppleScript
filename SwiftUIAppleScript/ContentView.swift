@@ -52,8 +52,8 @@ struct CardModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
             .background(Color(#colorLiteral(red: 0.137561053, green: 0.1773550212, blue: 0.1941199303, alpha: 1)))
-            .cornerRadius(20)
-            .shadow(color: Color.black.opacity(0.2), radius: 20, x: 0, y: 0)
+            .cornerRadius(12)
+            .shadow(color: Color.black.opacity(0.5), radius: 8, x: 0, y: 3)
     }
 }
 
@@ -81,12 +81,13 @@ struct AppleScriptRunnerView: View {
 
             case .complete(let result):
                 Text(result.display)
-                        .foregroundColor(.white)
-                        .padding(.all, 10)
+                    .foregroundColor(.white)
+                    .padding(.all, 10)
                 
             case .error(let message):
                 Text(message)
                     .foregroundColor(.red)
+                    .padding(.all, 10)
 
             case .idle:
                 Group() {} // empty ...
@@ -105,7 +106,7 @@ struct AppleScriptRunnerView: View {
 
 struct ContentView: View {
     var body: some View {
-        Color.black
+        Color.white
             .overlay(
             VStack {
                 AppleScriptRunnerView("AppleScript Counter",
