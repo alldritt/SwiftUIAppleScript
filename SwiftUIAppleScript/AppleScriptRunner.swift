@@ -23,7 +23,9 @@ class AppleScriptRunner: ObservableObject, Hashable {
     let id = UUID()
     let script: NSAppleScript
 
-    enum State { case idle, running, complete(NSAppleEventDescriptor), error(String) }
+    enum State: Equatable {
+        case idle, running, complete(NSAppleEventDescriptor), error(String)
+    }
     
     @Published private (set) var state = State.idle
 

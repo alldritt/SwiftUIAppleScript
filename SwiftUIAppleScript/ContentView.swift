@@ -95,7 +95,8 @@ struct AppleScriptRunnerView: View {
             Button("Run") {
                 script.executeAsync()
             }
-            .padding()
+                .padding()
+                .disabled(script.state == .running)
             Spacer()
         }
         .frame(maxWidth: .infinity, alignment: .center)
